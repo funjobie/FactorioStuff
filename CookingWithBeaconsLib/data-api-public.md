@@ -115,3 +115,21 @@ The details are specified in the control script give_custom_beacon_shape_to_enti
 |-|-|
 |param[in] beaconPrototype|the beacon prototype to adapt|
 
+**cookingwithbeaconslib.public.enable_feature_concave_hull_beacon_shapes()**
+
+enable the feature to define beacons which can affect a concave hull formed of other entities. This also gives more control how to apply the effects to entities.
+This works by using a hidden beacon behind the entity, in which modules are inserted according to the boni of the encompassing hull beacons.
+if multiple mods call this the feature will only be enabled once.
+it adds necessary prototypes to the data.raw.
+
+Note that you must also call the control script enable_feature_concave_hull_beacon_shapes.
+
+**cookingwithbeaconslib.public.setup_concave_hull_beacon_shapes(beaconPrototype)**
+
+Specify that this prototype is a custom beacon. All this does is set the supply_area_distance to 0 in order to not affect entities twice. The actual logic is in the control scripts.
+The details are specified in the control script set_concave_hull_creating_group and give_concave_hull_beacon_shape_to_entity.
+Also a hidden energy receiver will be created which consumes power according to the size of the hull.
+
+|Argument/Return|Description|
+|-|-|
+|param[in] beaconPrototype|the beacon prototype to adapt|
