@@ -65,13 +65,15 @@ function giveResearchBonusToEntities(args, args2)
     assert(entities, "Library usage error give_research_bonus_to_entities: entities list is not provided")
     assert(type(entities) == "table", "Library usage error give_research_bonus_to_entities: the entities list was given but not a table, it is " .. type(entities))
     local entitiesListHasAtLeastOneEntry = false
-    for _, v in pairs(entities) do
+    for k1, v in pairs(entities) do
         entitiesListHasAtLeastOneEntry = true
         assert(type(v) == "string", "Library usage error give_research_bonus_to_entities: the entity list contained an entry which was not a string, but " .. type(v))
         assert(game.entity_prototypes[v], "Library usage error give_research_bonus_to_entities: the entity list contained an entry which is not an entity, name is: " .. v)
         assert(doesEntitySupportBeacons(game.entity_prototypes[v]), "Library usage error give_research_bonus_to_entities: the entity list contained an entry which cannot be affected by beacons. name is: " .. v)
-        for _, v2 in pairs(entities) do
-            assert(v ~= v2, "Library usage error give_research_bonus_to_entities: the entity " .. v .. " is present twice in the entity list.")
+        for k2, v2 in pairs(entities) do
+            if k1 ~= k2 then
+                assert(v ~= v2, "Library usage error give_research_bonus_to_entities: the entity " .. v .. " is present twice in the entity list.")
+            end
         end
     end
     assert(entitiesListHasAtLeastOneEntry, "Library usage error give_research_bonus_to_entities: entities list is empty")

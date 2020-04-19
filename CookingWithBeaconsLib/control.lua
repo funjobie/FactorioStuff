@@ -56,7 +56,7 @@ end
 
 local function init_globals()
     
-    global.version = "0.1.2"
+    global.version = "0.1.3"
     
     global.human_labor = {}
     global.robot_labor = {}
@@ -82,8 +82,13 @@ local function updateModVersion()
         init_interface()
         game.print("updated CookingWithBeaconsLib from 0.1.1 to 0.1.2")
     end
+    
+    if global.version == "0.1.2" then
+        init_interface()
+        game.print("updated CookingWithBeaconsLib from 0.1.2 to 0.1.3")
+    end
 
-    global.version = "0.1.2"
+    global.version = "0.1.3"
     
 end
 
