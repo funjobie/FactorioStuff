@@ -56,5 +56,5 @@ Note that you must also call the data script enable_feature_tile_bonus.
 |param[in] args.name|The name of the entity which should get a bonus for the tile it is located on|
 |param[in] args.mode|Must be "background" or "foreground". Specifies whether this bonus refers to the background or foreground. By default, tiles such as concrete are placed in the foreground while grass would be background.|
 |param[in] args.defaultBoni|The boni to use if the current tile is not one of those where a bonus is specified. Boni are specified as a table, e.g. {speed = {bonus = 0.4},consumption = {bonus = -0.4}}|
-|param[in] args.tileBoni|The boni to apply to the entity. It is structured as a table. The key is the name of the tile. the value is a boni specification, e.g. {speed = {bonus = 0.4},consumption = {bonus = -0.4}}|
+|param[in] args.tileBoni|The boni to apply to the entity. It is structured as a table. The key is the name of the tile. the value is a boni specification, e.g. {["red-desert-2"] = {speed = {bonus = 0.4},consumption = {bonus = -0.4}}}|
 
