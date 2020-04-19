@@ -26,7 +26,7 @@ You can also optionally call the control script make_human_powered_entity_requir
 
 |Argument/Return|Description|
 |-|-|
-|param[in] entity|the entity prototype to convert. for example, cookingwithbeaconslib.public.make_entity_human_powered(data.raw["assembling-machine"]["assembling-machine-1"]). allowed entity types are: "assembling-machine", "furnace", "mining-drill"|
+|param[in] entity|the entity prototype to convert. for example, cookingwithbeaconslib.public.make_entity_human_powered(data.raw["assembling-machine"]["assembling-machine-1"]). allowed entity types are: "assembling-machine", "furnace", "mining-drill", "lab"|
 
 **void cookingwithbeaconslib.public.enable_feature_robot_powered()**
 

@@ -24,3 +24,33 @@ https://wiki.factorio.com/Types/Energy
 |-|-|
 |return|a table which can be used for prototypes that expect an animation, and contains an invisible image|
 
+
+
+**numBits cookingwithbeaconslib.private.get_num_bits_for_module_effects()**
+
+|Argument/Return|Description|
+|-|-|
+|return|The number of bits that can be used for module effects|
+
+**void cookingwithbeaconslib.private.add_hidden_beacon()**
+
+Adds a prototype for a hidden beacon to the data.raw
+
+**void cookingwithbeaconslib.private.add_unit_module_if_not_existing(effectType, level, bonusMultiplier)**
+
+Adds one hidden module prototype to the data.raw, where the level corresponds to the number of bits in the effect strength.
+
+|Argument/Return|Description|
+|-|-|
+|param[in] effectType|the effect type, for example "speed"|
+|param[in] level|the level, which will be used as the exponent to calculate the strength|
+|param[in] bonusMultiplier|a multiplier on the effect strength, to create positive and negative effects|
+
+
+**void cookingwithbeaconslib.private.add_all_unit_modules()**
+
+Adds hidden module prototypes to the data.raw, which correspond to the bits that are supported, for all 4 module types, in both positive and negative direction.
+
+**void cookingwithbeaconslib.private.add_hidden_beacon_and_unit_modules()**
+
+Convenience function that adds a hidden beacon and all effects
