@@ -276,6 +276,24 @@ In general the entities are only allowed to form a line (or circle) but never an
 |param[in] args.powerConsumption|How much power shall be consumed, per tile, as a number in Joules|
 |param[in] args.powerExponent|The exponent for the power consumption of the number of tiles, as a number. 1 would be a linear cost, 2 a quadratic cost for tiles.|
 
-
-
 ## Forbidden beacon overlap
+
+**CookingWithBeaconsLib.enable_feature_forbidden_beacon_overlap**
+
+Enables the feature to define that some beacons shall not overlap.
+This works by checking during placement if there are any conflicting beacons.
+if multiple mods call this the feature will only be enabled once.
+
+**CookingWithBeaconsLib.set_forbidden_beacon_overlap_for_entity**
+
+Set-up a condition to destroy the beacon upon placement, if there are any conflicting beacons.
+Note that this is not inverse:
+If you set-up that a is destroyed if b exists, but not that b is destroyed if a exists, it depends on the build order what you get.
+You probably want to set-up destruction in both directions.
+
+|Argument/Return|Description|
+|-|-|
+|param[in] args|All arguments, grouped in a table|
+|param[in] args.name|The name of the beacon entity for which to define the conditions when it should be destroyed|
+|param[in] args.forbidden|A list of beacon entity names. When the beacon with the args.name is placed, the surrounding area will be checked. if there are any beacons in the "forbidden" list, it will be destroyed.|
+
