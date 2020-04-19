@@ -1,0 +1,9 @@
+{
+  "name": "CookingWithBeaconsVanillaEditionPerfTests",
+  "version": "0.1.1",
+  "title": "CookingWithBeacons Vanilla Edition Performance tests",
+  "author": "CaveGrinder",
+  "description": "adds performance tests for some area of the code.",
+  "factorio_version": "0.18",
+  "dependencies": ["base >= 0.18.1", "CookingWithBeaconsVanillaEdition >= 0.1.1"]
+}
