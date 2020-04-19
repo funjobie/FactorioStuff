@@ -86,3 +86,13 @@ You must also call the control script give_research_bonus_to_entities for each b
 |param[in] researchBonusChains.*.time|The time that the technology uses. This is a number just like when specifying technologies normally|
 |param[in] researchBonusChains.*.additionalPrerequisites|Additional prerequisites that are added as a dependency|
 |param[in] affectedBoni|A structure describing the individual boni to be granted to this group of entities. It is a table and can contain entries for the desired effects, e.g. {productivity={bonus=0.04},speed={bonus=0.05}}. For each effect a separate technology will be added.|
+
+**cookingwithbeaconslib.public.enable_feature_tile_bonus()**
+
+enable the feature to give entities a bonus based on the tile where they are located on.
+This works by using a hidden beacon behind the entity, in which modules are inserted according to the tile below the entity.
+if multiple mods call this the feature will only be enabled once.
+it adds necessary prototypes to the data.raw.
+
+Note that you must also call the control script enable_feature_tile_bonus.
+Individual boni are specified in the control scripts with give_tile_bonus_to_entity.
