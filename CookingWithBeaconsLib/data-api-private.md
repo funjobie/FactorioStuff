@@ -9,16 +9,16 @@ https://wiki.factorio.com/Types/Energy
 
 |Argument/Return|Description|
 |-|-|
-|param[in]|energyString a string|
+|param[in] energyString|a string|
 |return|a numeric equivalent, or nil if it couldn't be converted.|
 
-**table cookingwithbeaconslib.no_sprite()**
+**table cookingwithbeaconslib.private.no_sprite()**
 
 |Argument/Return|Description|
 |-|-|
 |return|a table which can be used for prototypes that expect a sprite, and contains an invisible image|
 
-**table cookingwithbeaconslib.no_anim()**
+**table cookingwithbeaconslib.private.no_anim()**
 
 |Argument/Return|Description|
 |-|-|
