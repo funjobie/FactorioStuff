@@ -115,6 +115,8 @@ This function sets up a custom beacon.
 
 The shape is given as a matrix, for example like this:
 
+```
+
 shape = {
         "OOOOOXOOOOO",
         "OOOOXXXOOOO",
@@ -128,6 +130,8 @@ shape = {
         "OOOOXXXOOOO",
         "OOOOOXOOOOO",
     }
+
+```
     
 The following letters are allowed: 'O' means no affect, 'X' means affected by the beacon, and 'E' means the beacon position.
 If maps directly to the coordinate system also seen on screen, meaning that the first letter in the first string is to the top-left of the entity while the last letter of the last string is bottom right.
@@ -150,17 +154,21 @@ You can can specify the effect calculation that controls how much bonus the affe
 If you don't specify it, it behaves like a normal beacon.
 (A normal beacon: Independent of how much the beacon covers the entity, it grants x*y*z where x is the distribution_effectivity and y is the modules effects and z is 1.)
 The transmission is a table of tables, e.g.
+```
 transmission = {
     {speed="a",consumption="b",productivity="c",pollution="d"},
     {speed="e",consumption="f",productivity="g",pollution="h"},
 }
+```
 Each list element refers to a transmission group. Normally you only want one group, but you can use multiple if you want to use time dependent transmissions (see further below).
 In this example there are two groups. To calculate how much speed the entity gets, it will kind of "invoke" the function "a". In particular it will need to be specified as in this example:
+```
 local zeroEffect = "function(speed,consumption,productivity,pollution,distribution_effectivity,strength) return 0 end"
 local prodBuff = "function(speed,consumption,productivity,pollution,distribution_effectivity,strength) return productivity * distribution_effectivity end"
 transmission = {
     {speed=zeroEffect,consumption=zeroEffect,productivity=prodBuff,pollution=zeroEffect}
 }
+```
 The signature "function(speed,consumption,productivity,pollution,distribution_effectivity,strength)" is fixed and required to be provided.
 What follows afterwards is code to be executed. Note that you cannot use any variables outside of the scope; it must be a string which will be evaluated by the mod.
 The arguments of the functor are:
@@ -174,6 +182,7 @@ The arguments of the functor are:
 |param[in] strength|How much of the entity is covered by the beacon coverage. 1 means fully overlapped. 0 would be not overlapped at all.|
 
 Examples:
+```
 transmission = {
         {
             speed=       "function(speed,consumption,productivity,pollution,distribution_effectivity,strength) return 0.5 end",
@@ -182,8 +191,10 @@ transmission = {
             pollution=   "function(speed,consumption,productivity,pollution,distribution_effectivity,strength) return 0.25 end",
         },
     }
+```
 This beacon grants 50% speed bonus and increases pollution production by 25%, no matter what modules are inside.
 
+```
 local transmission = {
     {
         speed=       "function(speed,consumption,productivity,pollution,distribution_effectivity,strength) return speed        * distribution_effectivity * strength end",
@@ -192,12 +203,15 @@ local transmission = {
         pollution=   "function(speed,consumption,productivity,pollution,distribution_effectivity,strength) return pollution    * distribution_effectivity * strength end",
     },
 }
+```
 This beacon is like a normal beacon but the strength of the affect depends on how much the beacon coverage overlaps the entity.
 
 You can specify that the bonus of beacons changes over time. If you don't do this then only one transmission group is expected and that one will always be used.
 If you want to use this feature, then you define a function which for a certain tick number calculates which of the transmission groups should be used.
 For example the following function:
+```
 local nightOrDay = "function(tick) local mod = tick % 25000 if mod >= 25000*0.25 and mod < 25000*0.75 then return 2 else return 1 end end"
+```
 Will result in using the transmission group 2 during the night and transmission group 1 during the day.
 Note that this is not evaluated every tick, just occasionally. So you cannot make high frequently changing beacons. Also you shouldn't do this as it would impact the performance.
 (There is only a performance cost if the group actually changes).
