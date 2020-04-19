@@ -7,7 +7,7 @@ factorio devs
 
 local function init_globals()
     
-    global.version = "0.1.2"
+    global.version = "0.1.3"
     
     remote.call("CookingWithBeaconsLib", "enable_feature_human_powered")
     remote.call("CookingWithBeaconsLib", "make_human_powered_entity_require_tools", {name="manual-assembler", listOfTools={{"infinity-screwdriver"},{"repair-pack"}}, durabilityLosPerLaborUnit=0.1})
@@ -169,8 +169,12 @@ local function updateModVersion()
         
         game.print("updated CookingWithBeaconsVanillaEdition from 0.1.1 to 0.1.2")
     end
+    
+    if global.version == "0.1.2" then
+        game.print("updated CookingWithBeaconsVanillaEdition from 0.1.2 to 0.1.3")
+    end
 
-    global.version = "0.1.2"
+    global.version = "0.1.3"
 
 end
 
