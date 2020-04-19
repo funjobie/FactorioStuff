@@ -1,4 +1,4 @@
-#API description of the CookingWithBeaconsLib, version 0.1.2
+# API description of the CookingWithBeaconsLib, version 0.1.2
 
 This is the description of the public API; these functions are permitted to be called from other mods.
 
@@ -26,8 +26,7 @@ You can also optionally call the control script make_human_powered_entity_requir
 
 |Argument/Return|Description|
 |-|-|
-|param[in] entity|the entity prototype to convert. for example, cookingwithbeaconslib.public.make_entity_human_powered(data.raw["assembling-machine"]["assembling-machine-1"])
-                   allowed entity types are: "assembling-machine", "furnace", "mining-drill"|
+|param[in] entity|the entity prototype to convert. for example, cookingwithbeaconslib.public.make_entity_human_powered(data.raw["assembling-machine"]["assembling-machine-1"]). allowed entity types are: "assembling-machine", "furnace", "mining-drill"|
 
 **void cookingwithbeaconslib.public.enable_feature_robot_powered()**
 
@@ -54,7 +53,6 @@ You also must call the control script make_entity_robot_powered for each entity 
 
 |Argument/Return|Description|
 |-|-|
-|param[in] entity|the entity prototype to convert. for example, cookingwithbeaconslib.public.make_entity_robot_powered(data.raw["assembling-machine"]["assembling-machine-1"])
-                   allowed entity types are: "assembling-machine", "furnace", "mining-drill", "inserter", "lab"|
+|param[in] entity|the entity prototype to convert. for example, cookingwithbeaconslib.public.make_entity_robot_powered(data.raw["assembling-machine"]["assembling-machine-1"]). allowed entity types are: "assembling-machine", "furnace", "mining-drill", "inserter", "lab"|
 |param[in] energy_buffer_in_seconds(optional)|How many seconds of energy to buffer. If not given it defaults to 30s|
 
