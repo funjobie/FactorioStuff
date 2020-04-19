@@ -134,7 +134,8 @@ shape = {
 ```
     
 The following letters are allowed: 'O' means no affect, 'X' means affected by the beacon, and 'E' means the beacon position.
-If maps directly to the coordinate system also seen on screen, meaning that the first letter in the first string is to the top-left of the entity while the last letter of the last string is bottom right.
+It maps directly to the coordinate system also seen on screen, meaning that the first letter in the first string is to the top-left of the entity while the last letter of the last string is bottom right.
+Each letter refers to exactly one tile distance in the game world.
 You can define rectangular shapes, but all strings must have the same length. You can put the entity position anywhere you want, but only one 'E' may be specified.
 There are two helper functions create_sphere_custom_shape and create_diamond_custom_shape for easy sphere and diamond shapes.
 
@@ -242,5 +243,39 @@ Note that this is not evaluated every tick, just occasionally. So you cannot mak
 |return|A diamond based shape which can be used as a shape for a custom beacon|
 
 ## Concave hull beacons
+
+**CookingWithBeaconsLib.enable_feature_concave_hull_beacon_shapes**
+
+enable the feature to define beacons which can affect a concave hull formed of other entities. This also gives more control how to apply the effects to entities.
+This works by using a hidden beacon behind the entity, in which modules are inserted according to the boni of the encompassing hull beacons.
+if multiple mods call this the feature will only be enabled once.
+
+Note that you must also call the data script enable_feature_concave_hull_beacon_shapes.
+
+**CookingWithBeaconsLib.set_concave_hull_creating_group**
+
+This function defines which entities form a hull. Hull entities are subject to strict checks where they are allowed to be placed.
+In general the entities are only allowed to form a line (or circle) but never an intersection; otherwise they will be destroyed.
+
+|Argument/Return|Description|
+|-|-|
+|param[in] args|All arguments, grouped in a table|
+|param[in] args.hullName|The unique name of the hull|
+|param[in] args.entities|A list of entity names which form the hull. Only "wall" and "gate" entities are allowed.|
+
+**CookingWithBeaconsLib.give_concave_hull_beacon_shape_to_entity**
+
+|Argument/Return|Description|
+|-|-|
+|param[in] args|All arguments, grouped in a table|
+|param[in] args.name|The name of the beacon entity|
+|param[in] args.hullName|The unique name of the hull|
+|param[in] args.entityFilter (optional)|Same rules as for custom beacons in the chapter above.|
+|param[in] args.transmission (optional)|Same rules as for custom beacons in the chapter above.|
+|param[in] args.timeDependentTransmission (optional)|Same rules as for custom beacons in the chapter above.|
+|param[in] args.powerConsumption|How much power shall be consumed, per tile, as a number in Joules|
+|param[in] args.powerExponent|The exponent for the power consumption of the number of tiles, as a number. 1 would be a linear cost, 2 a quadratic cost for tiles.|
+
+
 
 ## Forbidden beacon overlap
