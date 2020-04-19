@@ -96,3 +96,22 @@ it adds necessary prototypes to the data.raw.
 
 Note that you must also call the control script enable_feature_tile_bonus.
 Individual boni are specified in the control scripts with give_tile_bonus_to_entity.
+
+**cookingwithbeaconslib.public.enable_feature_custom_beacon_shapes()**
+
+enable the feature to define custom beacons, which provide features such as complicated shapes and more control how to apply the effects to entities.
+This works by using a hidden beacon behind the entity, in which modules are inserted according to the boni of the surrounding custom beacons.
+if multiple mods call this the feature will only be enabled once.
+it adds necessary prototypes to the data.raw.
+
+Note that you must also call the control script enable_feature_custom_beacon_shapes.
+
+**cookingwithbeaconslib.public.setup_custom_beacon_shapes(beaconPrototype)**
+
+Specify that this prototype is a custom beacon. All this does is set the supply_area_distance to 0 in order to not affect entities twice. The actual logic is in the control scripts.
+The details are specified in the control script give_custom_beacon_shape_to_entity.
+
+|Argument/Return|Description|
+|-|-|
+|param[in] beaconPrototype|the beacon prototype to adapt|
+
