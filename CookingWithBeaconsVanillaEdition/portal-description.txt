@@ -1,0 +1,58 @@
+This mod introduced some script heavy features into the game.
+It uses the CookingWithBeaconsLib, which is intended to provide the features to other interested modders.
+This mod is intended to enrich the base game, without prolonging anything. It just adds additional features to play around with.
+
+The following features are added:
+
+An optional, manual assembler that doesn't need electricity.
+It needs a player standing in front of it (who is not hand crafting at that moment).
+It uses a bit of durability from repair-packs, but is faster and more efficient than hand-crafting.
+It is optional in the tech tree but can be used as an alternative to mass hand-crafting.
+
+A robotic assembler.
+This assembler works by drawing construction robots towards it with fake deconstruction orders.
+Then they are drained of their energy.
+In the tech tree, you will need this entity in order to craft processing units(blue circuits) and rocket control units.
+In the late game there is a research that allows you to use regular assemblers instead, so that your megabase doesn't suffer from its UPS performance impact.
+(It is not noticeable with a few of them, but thousands would be a problem)
+This entity requires you to carefully balance its energy consumption against how much power the construction robots can bring.
+I recommend using the mod Robot Battery Research https://mods.factorio.com/mod/Robot_Battery_Research as it improves their usage.
+
+Lots of tricks with hidden beacons:
+
+Tile boni for furnaces:
+the furnaces get: 20% speed increase + 20% energy usage decrease on sand background, and 40% speed increase + 40% energy usage decrease on red desert background
+10% productivity bonus for placement on stone, 15% for concrete and 20% productivity bonus for placement on refined concrete.
+Both boni can be combined, so a furnace in a red desert on refined concrete would be the best.
+
+Research boni:
+This mod adds research that improves your crafting machines:
+- Speed/Productivity improvements for the manual assembler
+- Speed/Productivity improvements for regular assemblers
+- pollution reduction for all crafting entities
+- pollution reduction for the electric mining drill
+- power reduction for electric furnaces
+
+3 Custom beacons are added:
+
+The red moon beacon can have productivity modules inside. However it transmits its effect only during the night, during the day you get a speed and productivity debuff instead.
+Its shape is a diamond pattern, and it may not overlap other red moon beacons or the other 2 new beacons.
+
+The green sphere beacon has a high sphere range and doesn't use a lot of power, but can only have energy consumption modules placed inside.
+Its strength is relative to how much of the entity is actually covered. (as opposed to the normal way where each beacon affects all entities in range fully).
+It may not overlap other green sphere beacons or the other 2 new beacons.
+
+The blue energy field beacon applies a fixed 50% speed bonus (and 25% pollution increase) to all miners / pump-jacks inside a concave hull.
+The hull has to be created by placing down Concrete energy field walls and gates. You can do any shape you want for the hull, but you must not construct overlapping or intersecting hulls.
+Otherwise the hull pieces placed down will be destroyed. (to put it simply: one wall element must have exactly 2 neighbor wall elements, no more no less.)
+The bigger the covered area, the higher the energy consumption. It increases more than linear so you are adviced to make the hull as compact as possible.
+It may not overlap othe blue energy field beacons or the other 2 new beacons.
+
+In general the features are script heavy so there is a higher chance of them breaking in future factorio versions.
+However it seems to be stable enough for the moment, i have finished a playthrough using it.
+In combination with other script heavy mods there is however a higher chance of it breaking down.
+
+The mod is not tested in multiplayer yet. Also migrations may be more difficult than normal if you use it, you should be a bit careful. There are functions missing that simplify migrating.
+
+I will not make this mod compatible with other big gameplay mods like bob's/angel's mods, Yuoki's mods or pyanodon's mods, but the library mod CookingWithBeaconsLib is designed 
+so that it can be used by others to enrich other mods.

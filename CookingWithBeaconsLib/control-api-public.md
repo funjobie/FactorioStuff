@@ -290,10 +290,10 @@ Set-up a condition to destroy the beacon upon placement, if there are any confli
 Note that this is not inverse:
 If you set-up that a is destroyed if b exists, but not that b is destroyed if a exists, it depends on the build order what you get.
 You probably want to set-up destruction in both directions.
+You can use normal beacons, custom beacons and concave hull beacons for this API.
 
 |Argument/Return|Description|
 |-|-|
 |param[in] args|All arguments, grouped in a table|
 |param[in] args.name|The name of the beacon entity for which to define the conditions when it should be destroyed|
 |param[in] args.forbidden|A list of beacon entity names. When the beacon with the args.name is placed, the surrounding area will be checked. if there are any beacons in the "forbidden" list, it will be destroyed.|
-
