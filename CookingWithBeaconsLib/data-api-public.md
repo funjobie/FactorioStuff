@@ -3,6 +3,8 @@
 This is the description of the public API in the data stage; these functions are permitted to be called from other mods. 
 In general you must perform actions both in the data and also control phase for it to work.
 
+## Human powered entities
+
 **void cookingwithbeaconslib.public.enable_feature_human_powered()**
 
 enables the feature to power entities via human labor.
@@ -28,6 +30,8 @@ You can also optionally call the control script make_human_powered_entity_requir
 |Argument/Return|Description|
 |-|-|
 |param[in] entity|the entity prototype to convert. for example, cookingwithbeaconslib.public.make_entity_human_powered(data.raw["assembling-machine"]["assembling-machine-1"]). allowed entity types are: "assembling-machine", "furnace", "mining-drill", "lab"|
+
+## Robot powered entities
 
 **void cookingwithbeaconslib.public.enable_feature_robot_powered()**
 
@@ -59,6 +63,8 @@ You also must call the control script make_entity_robot_powered for each entity 
 |param[in] entity|the entity prototype to convert. for example, cookingwithbeaconslib.public.make_entity_robot_powered(data.raw["assembling-machine"]["assembling-machine-1"]). allowed entity types are: "assembling-machine", "furnace", "mining-drill", "inserter", "lab"|
 |param[in] energy_buffer_in_seconds(optional)|How many seconds of energy to buffer. If not given it defaults to 30s|
 
+## Tile bonus for entities
+
 **cookingwithbeaconslib.public.enable_feature_tile_bonus()**
 
 enable the feature to give entities a bonus based on the tile where they are located on.
@@ -68,6 +74,8 @@ it adds necessary prototypes to the data.raw.
 
 Note that you must also call the control script enable_feature_tile_bonus.
 Individual boni are specified in the control scripts with give_tile_bonus_to_entity.
+
+## Research bonus for entities
 
 **cookingwithbeaconslib.public.enable_feature_research_bonus()**
 
@@ -100,6 +108,8 @@ You must also call the control script give_research_bonus_to_entities for each b
 |param[in] researchBonusChains.*.additionalPrerequisites|Additional prerequisites that are added as a dependency|
 |param[in] affectedBoni|A structure describing the individual boni to be granted to this group of entities. It is a table and can contain entries for the desired effects, e.g. {productivity={bonus=0.04},speed={bonus=0.05}}. For each effect a separate technology will be added.|
 
+## Custom beacons
+
 **cookingwithbeaconslib.public.enable_feature_custom_beacon_shapes()**
 
 enable the feature to define custom beacons, which provide features such as complicated shapes and more control how to apply the effects to entities.
@@ -117,6 +127,8 @@ The details are specified in the control script give_custom_beacon_shape_to_enti
 |Argument/Return|Description|
 |-|-|
 |param[in] beaconPrototype|the beacon prototype to adapt|
+
+## Concave hull beacons
 
 **cookingwithbeaconslib.public.enable_feature_concave_hull_beacon_shapes()**
 
