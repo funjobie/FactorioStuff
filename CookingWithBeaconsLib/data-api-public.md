@@ -1,6 +1,6 @@
 # API description of the CookingWithBeaconsLib, version 0.1.2
 
-This is the description of the public API in the data state; these functions are permitted to be called from other mods. 
+This is the description of the public API in the data stage; these functions are permitted to be called from other mods. 
 In general you must perform actions both in the data and also control phase for it to work.
 
 **void cookingwithbeaconslib.public.enable_feature_human_powered()**
