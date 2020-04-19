@@ -56,3 +56,33 @@ You also must call the control script make_entity_robot_powered for each entity 
 |param[in] entity|the entity prototype to convert. for example, cookingwithbeaconslib.public.make_entity_robot_powered(data.raw["assembling-machine"]["assembling-machine-1"]). allowed entity types are: "assembling-machine", "furnace", "mining-drill", "inserter", "lab"|
 |param[in] energy_buffer_in_seconds(optional)|How many seconds of energy to buffer. If not given it defaults to 30s|
 
+**cookingwithbeaconslib.public.enable_feature_research_bonus()**
+
+enable the feature to give entities a bonus through research.
+This works by using a hidden beacon behind the entity, in which modules are inserted according to the research level.
+must be called before any concrete research boni are specified.
+if multiple mods call this the feature will only be enabled once.
+it adds necessary prototypes to the data.raw
+
+Note that you also must call the control script enable_feature_research_bonus.
+
+**void cookingwithbeaconslib.public.add_research_boni(uniqueBonusName, entities, groupLocalization, researchBonusChains, affectedBoni)**
+
+Adds a technology to the game that grants boni to entities (similar to module effects).
+
+Note that you also must call the data script enable_feature_research_bonus before.
+You must also call the control script give_research_bonus_to_entities for each bonus group. You can optionally call add_entities_to_research_bonus_group to add additional entities to a group later.
+
+|Argument/Return|Description|
+|-|-|
+|param[in] uniqueBonusName|the unique bonus name that identifies it|
+|param[in] entities|list of entity names which are affected by the research bonus|
+|param[in] groupLocalization|a localization string to be used for the group|
+|param[in] researchBonusChains|A structure describing the individual levels of the research. It is a list of tables.|
+|param[in] researchBonusChains.*.level|The starting level of the technology|
+|param[in] researchBonusChains.*.levelMax|The maximum level of the technology|
+|param[in] researchBonusChains.*.ingredients|The ingredients that the technology uses. This is itself a table, like also used when specifying technologies normally|
+|param[in] researchBonusChains.*.count_formula|The count_formala to use in the prototype. This is a string just like when specifying technologies normally|
+|param[in] researchBonusChains.*.time|The time that the technology uses. This is a number just like when specifying technologies normally|
+|param[in] researchBonusChains.*.additionalPrerequisites|Additional prerequisites that are added as a dependency|
+|param[in] affectedBoni|A structure describing the individual boni to be granted to this group of entities. It is a table and can contain entries for the desired effects, e.g. {productivity={bonus=0.04},speed={bonus=0.05}}. For each effect a separate technology will be added.|

@@ -54,3 +54,34 @@ Adds hidden module prototypes to the data.raw, which correspond to the bits that
 **void cookingwithbeaconslib.private.add_hidden_beacon_and_unit_modules()**
 
 Convenience function that adds a hidden beacon and all effects
+
+**cookingwithbeaconslib.private.getLocalizedNameAndDescription(uniqueBonusName, entities, groupLocalization, effectType, effectAmount)**
+
+Get the localized name and description for a research bonus
+
+|Argument/Return|Description|
+|-|-|
+|param[in] uniqueBonusName|the unique bonus name that identifies it|
+|param[in] entities|list of entity names which are affected by the research bonus|
+|param[in] groupLocalization|a localization string to be used for the group|
+|param[in] effectType|The type of the effect|
+|param[in] effectAmount|The strength of the research bonus|
+|return name, description|The localized name and description|
+
+**cookingwithbeaconslib.private.add_technology(uniqueBonusName, entities, groupLocalization, effectType, effectAmount, level, maxLevel, count_formula, ingredients, timeVal, additionalPrerequisites)**
+
+Adds one technology prototype
+
+|Argument/Return|Description|
+|-|-|
+|param[in] uniqueBonusName|the unique bonus name that identifies it|
+|param[in] entities|list of entity names which are affected by the research bonus|
+|param[in] groupLocalization|a localization string to be used for the group|
+|param[in] effectType|The type of the effect|
+|param[in] effectAmount|The strength of the research bonus|
+|param[in] level|The level of the technology|
+|param[in] maxLevel|The maximum level of the technology|
+|param[in] count_formula|The count_formala to use in the prototype|
+|param[in] ingredients|The ingredients that the technology uses|
+|param[in] timeVal|The timeVal that the technology uses|
+|param[in] additionalPrerequisites|Additional prerequisites that are added as a dependency|
