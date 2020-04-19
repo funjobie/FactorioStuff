@@ -39,3 +39,22 @@ Note that you also must call the data function cookingwithbeaconslib.public.enab
 |param[in] args|All arguments, grouped in a table|
 |param[in] args.name|The name of the robot powered entity|
 |param[in] args.requestThreshold|How soon construction robots should be called to the entity. e.g. 0.75 means when only 75% of the energy is remaing a request will be made.|
+
+**CookingWithBeaconsLib.enable_feature_tile_bonus**
+
+enable the feature to give entities a bonus based on the tile where they are located on.
+This works by using a hidden beacon behind the entity, in which modules are inserted according to the tile below the entity.
+if multiple mods call this the feature will only be enabled once.
+
+Note that you must also call the data script enable_feature_tile_bonus.
+
+**CookingWithBeaconsLib.give_tile_bonus_to_entity**
+
+|Argument/Return|Description|
+|-|-|
+|param[in] args|All arguments, grouped in a table|
+|param[in] args.name|The name of the entity which should get a bonus for the tile it is located on|
+|param[in] args.mode|Must be "background" or "foreground". Specifies whether this bonus refers to the background or foreground. By default, tiles such as concrete are placed in the foreground while grass would be background.|
+|param[in] args.defaultBoni|The boni to use if the current tile is not one of those where a bonus is specified. Boni are specified as a table, e.g. {speed = {bonus = 0.4},consumption = {bonus = -0.4}}|
+|param[in] args.tileBoni|The boni to apply to the entity. It is structured as a table. The key is the name of the tile. the value is a boni specification, e.g. {speed = {bonus = 0.4},consumption = {bonus = -0.4}}|
+
