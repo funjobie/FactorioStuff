@@ -3,6 +3,7 @@ AWS.config.update({region: 'us-east-2'});
 var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 var lambda = new AWS.Lambda({apiVersion: '2015-03-31'});
 var Jimp = require('jimp');
+var globalMercator = require('global-mercator')
 
 exports.handler = async (event) => {
     
@@ -42,7 +43,7 @@ exports.handler = async (event) => {
       };
       
       //Delegate to already existing "set cluster" lambda. this could also be done via SNS. Currently implemented synchron, but asynchron would be fine too.
-      event.queryStringParameters.content = generatedClusterAnswer.body;
+      event.queryStringParameters.content = JSON.stringify(generatedClusterAnswer.body, null, 2);
       try{
         await(lambda.invoke({
           FunctionName: 'FactorioWEPSetClusterData',
@@ -103,7 +104,7 @@ async function GetAnswerFromCache(surfaceName, x, y) {
     return result;
 }
 
-async function CreateNewCluster(surfaceName, x, y) {
+async function CreateNewCluster(surfaceName, chunk_x, chunk_y) {
 
     var result = {
       good: false,
@@ -127,44 +128,66 @@ async function CreateNewCluster(surfaceName, x, y) {
     var worldImagePixels_y = 10800;
     var worldImageSubdivision_x = 100;
     var worldImageSubdivision_y = 100;
-    //TODO fix
-    var subImgX = x;
-    var subImgY = y;
-    var pixelX = 5;
-    var pixelY = 5;
-    console.log('lookup pixel in subimg:', subImgX, "/", subImgY, " pixel:", pixelX, "/", pixelY);
+    var zoom_level = 2; //for testing; later go for 17
     
-    
-    var fileName = 'world-model/divided-parts/' + subImgX + '/' + subImgY + '.png';
-    console.log('Trying to download file', fileName);
+    var tiles = [];
+    var subImgMap = {};
     
     var s3 = new AWS.S3({});
-
-    //TODO rename bucket
-    var params = {
-        Bucket: 'factorio-world',
-        Key: fileName,
-    };
-
-    try {
-        var imageFile = await s3.getObject(params).promise();
-        var image = await Jimp.read(imageFile.Body);
-        var hex = image.getPixelColor(pixelX, pixelY); // returns the colour of that pixel e.g. 0xFFFFFFFF
+    
+    for (in_chunk_x = 0; in_chunk_x < factorio_cluster_size; ++in_chunk_x)
+    {
+      for (in_chunk_y = 0; in_chunk_y < factorio_cluster_size; ++in_chunk_y)
+      {
+        var pixel_x = chunk_x * factorio_cluster_size + in_chunk_x;
+        var pixel_y = chunk_y * factorio_cluster_size + in_chunk_y;
+        var meters = globalMercator.pixelsToMeters([pixel_x, pixel_y, zoom_level]);
+        var lnglat = globalMercator.metersToLngLat(meters);
+        console.log('coordinates for tile :', pixel_x, "/", pixel_y, " are:", lnglat);
+        
+        //TODO fix
+        var natural_earth_x = Math.floor(worldImagePixels_x * (lnglat[0] + 180.0) / 360.0);
+        var natural_earth_y = Math.floor(worldImagePixels_y * (lnglat[1] + 90.0) / 180.0);
+        var pixelX = natural_earth_x % worldImageSubdivision_x;
+        var pixelY = natural_earth_y % worldImageSubdivision_y;
+        var subImgX = natural_earth_x - pixelX;
+        var subImgY = natural_earth_y - pixelY;
+        console.log('lookup pixel in subimg:', subImgX, "/", subImgY, " pixel:", pixelX, "/", pixelY);
+        
+        
+        var fileName = 'world-model/divided-parts/' + subImgX + '/' + subImgY + '.png';
+        console.log('Trying to download file', fileName);
+        
+        if(typeof subImgMap[fileName] == "undefined")
+        {
+            //TODO rename bucket
+            var params = {
+              Bucket: 'factorio-world',
+              Key: fileName,
+            }
+            try {
+              var imageFile = await s3.getObject(params).promise();
+              var image = await Jimp.read(imageFile.Body);
+              subImgMap[fileName] = image;
+              } catch (error) {
+              console.log(error);
+              return result;
+            }  
+        };
+        var hex = subImgMap[fileName].getPixelColor(pixelX, pixelY); // returns the colour of that pixel e.g. 0xFFFFFFFF
         console.log('Pixel: ', hex);
         var rgba = Jimp.intToRGBA(hex); // e.g. converts 0xFFFFFFFF to {r: 255, g: 255, b: 255, a:255} 
         console.log('rgba: ', rgba);
         
         var nearestTile = GetNearestTileName(rgba.r, rgba.g, rgba.b);
         console.log("nearest tile: ", nearestTile);
-        result.good = true;
-        result.body = nearestTile + " for " + x + " ; " + y; //TODO proper list of tiles and entities in this cluster
-        return result;
-    } catch (error) {
-        console.log(error);
-        return result;
-    }  
-        
-    return response;
+        tiles.push(nearestTile);
+      }
+    }
+    
+    result.good = true;
+    result.body = tiles; //TODO proper list of tiles and entities in this cluster
+    return result;
 }
 
 function GetNearestTileName(r, g, b) {
