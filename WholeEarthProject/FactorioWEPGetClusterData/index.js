@@ -43,7 +43,7 @@ exports.handler = async (event) => {
       };
       
       //Delegate to already existing "set cluster" lambda. this could also be done via SNS. Currently implemented synchron, but asynchron would be fine too.
-      event.queryStringParameters.content = JSON.stringify(generatedClusterAnswer.body, null, 2);
+      event.queryStringParameters.content = generatedClusterAnswer.body;
       try{
         await(lambda.invoke({
           FunctionName: 'FactorioWEPSetClusterData',
@@ -143,7 +143,6 @@ async function CreateNewCluster(surfaceName, chunk_x, chunk_y) {
         var pixel_y = chunk_y * factorio_cluster_size + in_chunk_y;
         var meters = globalMercator.pixelsToMeters([pixel_x, pixel_y, zoom_level]);
         var lnglat = globalMercator.metersToLngLat(meters);
-        console.log('coordinates for tile :', pixel_x, "/", pixel_y, " are:", lnglat);
         
         //TODO fix
         var natural_earth_x = Math.floor(worldImagePixels_x * (lnglat[0] + 180.0) / 360.0);
@@ -152,14 +151,13 @@ async function CreateNewCluster(surfaceName, chunk_x, chunk_y) {
         var pixelY = natural_earth_y % worldImageSubdivision_y;
         var subImgX = natural_earth_x - pixelX;
         var subImgY = natural_earth_y - pixelY;
-        console.log('lookup pixel in subimg:', subImgX, "/", subImgY, " pixel:", pixelX, "/", pixelY);
         
         
         var fileName = 'world-model/divided-parts/' + subImgX + '/' + subImgY + '.png';
-        console.log('Trying to download file', fileName);
         
         if(typeof subImgMap[fileName] == "undefined")
         {
+            console.log('Trying to download file', fileName);
             //TODO rename bucket
             var params = {
               Bucket: 'factorio-world',
@@ -175,18 +173,17 @@ async function CreateNewCluster(surfaceName, chunk_x, chunk_y) {
             }  
         };
         var hex = subImgMap[fileName].getPixelColor(pixelX, pixelY); // returns the colour of that pixel e.g. 0xFFFFFFFF
-        console.log('Pixel: ', hex);
         var rgba = Jimp.intToRGBA(hex); // e.g. converts 0xFFFFFFFF to {r: 255, g: 255, b: 255, a:255} 
-        console.log('rgba: ', rgba);
         
         var nearestTile = GetNearestTileName(rgba.r, rgba.g, rgba.b);
-        console.log("nearest tile: ", nearestTile);
         tiles.push(nearestTile);
       }
     }
     
+    var encodedTiles = EncodeTiles(tiles);
+    
     result.good = true;
-    result.body = tiles; //TODO proper list of tiles and entities in this cluster
+    result.body = encodedTiles; //TODO proper list of tiles and entities in this cluster
     return result;
 }
 
@@ -217,4 +214,50 @@ function GetNearestTileName(r, g, b) {
       }
     }
     return lowestDifTile;
+}
+
+function EncodeTiles(tiles)
+{
+    var tilesFrequencies = {}
+    var mostFrequentTile = "out-of-map"
+    var mostFrequentTileCount = 0;
+    var tileOffsetEncodings = {}
+    var tileOffsetEncodingsLastPosition = {}
+    var index = 0;
+    for (const [key, value] of Object.entries(tiles))
+    {
+      if (typeof tilesFrequencies[value] == "undefined")
+      {
+        tilesFrequencies[value] = 0;
+        tileOffsetEncodings[value] = [];
+        tileOffsetEncodingsLastPosition[value] = -1;
+      }
+      tilesFrequencies[value] = tilesFrequencies[value] + 1;
+      if (tilesFrequencies[value] > mostFrequentTileCount)
+      {
+        mostFrequentTile = value;
+        mostFrequentTileCount = tilesFrequencies[value];
+      }
+      if (tileOffsetEncodingsLastPosition[value] == -1)
+      {
+        tileOffsetEncodings[value].push(index);
+      }
+      else
+      {
+        tileOffsetEncodings[value].push(index - tileOffsetEncodingsLastPosition[value]);
+      }
+      tileOffsetEncodingsLastPosition[value] = index;
+      
+      index = index + 1;
+    }
+    delete tileOffsetEncodings[mostFrequentTile]; //not needed since most frequent will just be stored as default
+    
+    var resultString = "def:"+mostFrequentTile+";";
+    for (const [key, value] of Object.entries(tileOffsetEncodings))
+    {
+      resultString += (key + ":");
+      resultString += value.join(":");
+      resultString += ";";
+    }
+    return resultString;
 }
