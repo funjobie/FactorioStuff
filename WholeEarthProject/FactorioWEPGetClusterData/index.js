@@ -22,7 +22,21 @@ exports.handler = async (event) => {
     }
     console.log('Request parameters: surface:', event.queryStringParameters.surfaceName, " x:", event.queryStringParameters.x, " y:", event.queryStringParameters.y);
 
-    var cachedAnswer = await GetAnswerFromCache(event.queryStringParameters.surfaceName, event.queryStringParameters.x, event.queryStringParameters.y);
+    var zoom_level = 2; //for testing; later go for 17
+    if(event.queryStringParameters.y < 0)
+    {
+      const response = {
+        statusCode: 400,
+        body: JSON.stringify('negative y is not allowed'),
+      };
+      return response;
+    }
+    y = event.queryStringParameters.y;
+    var num_chunks = Math.pow(2, zoom_level) * 8; //in Web_Mercator_projection there are 256 pixels for an image, in factorio there are 32 tiles per chunk, so multiply by 8. also zoom is a subdivision (e.g. zoom=0 is 2^0 image, zoom=4 is 2^4 images);
+    x = event.queryStringParameters.x % num_chunks;
+    console.log('wrapped parameters: surface:', event.queryStringParameters.surfaceName, " x:", x, " y:", y);
+    
+    var cachedAnswer = await GetAnswerFromCache(event.queryStringParameters.surfaceName, x, y);
     if(cachedAnswer.good)
     {
       const response = {
@@ -33,7 +47,7 @@ exports.handler = async (event) => {
     }
     
     //Cluster doesn't exist yet - generate a new one
-    var generatedClusterAnswer = await CreateNewCluster(event.queryStringParameters.surfaceName, event.queryStringParameters.x, event.queryStringParameters.y);
+    var generatedClusterAnswer = await CreateNewCluster(event.queryStringParameters.surfaceName, x, y, zoom_level);
     if(generatedClusterAnswer.good)
     {
       //at this point its clear that the answer is fine - but result should be persisted regardless to answer next request faster
@@ -44,6 +58,8 @@ exports.handler = async (event) => {
       
       //Delegate to already existing "set cluster" lambda. this could also be done via SNS. Currently implemented synchron, but asynchron would be fine too.
       event.queryStringParameters.content = generatedClusterAnswer.body;
+      event.queryStringParameters.x = x;
+      event.queryStringParameters.y = y;
       try{
         await(lambda.invoke({
           FunctionName: 'FactorioWEPSetClusterData',
@@ -104,7 +120,7 @@ async function GetAnswerFromCache(surfaceName, x, y) {
     return result;
 }
 
-async function CreateNewCluster(surfaceName, chunk_x, chunk_y) {
+async function CreateNewCluster(surfaceName, chunk_x, chunk_y, zoom_level) {
 
     var result = {
       good: false,
@@ -128,7 +144,6 @@ async function CreateNewCluster(surfaceName, chunk_x, chunk_y) {
     var worldImagePixels_y = 10800;
     var worldImageSubdivision_x = 100;
     var worldImageSubdivision_y = 100;
-    var zoom_level = 2; //for testing; later go for 17
     
     var tiles = [];
     var subImgMap = {};
