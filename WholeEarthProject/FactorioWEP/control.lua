@@ -26,6 +26,7 @@ local function get_chunk_req_list()
             closestChunk = chunk
         end
     end
+    --TODO: currently only publishing one chunk - batch requests to be analyzed later
     if closestChunk then
         rcon.print("RCON_CHUNK_REQ:surface=" .. closestChunk.surface .. ";x=" .. closestChunk.x .. ";y=" .. closestChunk.y..";")
     end
@@ -41,13 +42,11 @@ local function update_chunk(event)
     --tick :: uint: Tick the command was used.
     --player_index :: uint (optional): The player who used the command. It will be missing if run from the server console.
     --parameter :: string (optional): The parameter passed after the command, separated from the command by 1 space.
-    --log(event.parameter)
     
     if not event.player_index then --ensure only rcon triggers chunk update
         f = loadstring(event.parameter)
         f() --sets "surface", "chunk_x", "chunk_y", "tiles"
-        --log(surface)
-        --log(serpent.block(tiles))
+
         game.surfaces[surface].set_tiles(tiles)
         for k,v in pairs(global.needed_chunks) do
             if v.surface == surface and v.x == chunk_x and v.y == chunk_y then
@@ -56,6 +55,10 @@ local function update_chunk(event)
             end
         end
 
+        for _,p in pairs(game.players) do
+            p.force.chart(game.surfaces[surface], {{32*chunk_x, 32*chunk_y}, {32*chunk_x+31, 32*chunk_y+31}})
+        end
+        
     end
 
 end
@@ -81,6 +84,7 @@ end)
 script.on_event(defines.events.on_chunk_generated, function(e)
 
     if e.surface.name ~= "nauvis" then return end
+    e.surface.build_checkerboard(e.area)
     if e.position.y < 0 then return end
     if e.position.y > 32 then return end --temporary to avoid unnecessary load. but here a limit is still needed!
     if e.position.x < 0 then return end --temporary to avoid unnecessary load
@@ -88,7 +92,6 @@ script.on_event(defines.events.on_chunk_generated, function(e)
     
     table.insert(global.needed_chunks, {surface=e.surface.name,x=e.position.x,y=e.position.y})
 
-    e.surface.build_checkerboard(e.area)
     
 end)
 
