@@ -7,11 +7,6 @@ var globalMercator = require('global-mercator')
 
 exports.handler = async (event) => {
     
-    //TODO:
-    //input: ClusterID(surface+x+y)
-    //if cluster doesn't exist in DB, generate (e.g. from 1:10 natural earth world model) and store in db
-    //output: content from DB
-    
     if(!(typeof event.queryStringParameters.surfaceName != "undefined" && typeof event.queryStringParameters.x != "undefined"&& typeof event.queryStringParameters.y != "undefined"))
     {
       const response = {
@@ -22,7 +17,12 @@ exports.handler = async (event) => {
     }
     console.log('Request parameters: surface:', event.queryStringParameters.surfaceName, " x:", event.queryStringParameters.x, " y:", event.queryStringParameters.y);
 
-    var zoom_level = 2; //for testing; later go for 17
+    //This is using
+    //https://en.wikipedia.org/wiki/Web_Mercator_projection
+    //zoom level 17:  	1.194328566 meters per pixel(factorio tile tile)
+    //https://github.com/DenisCarriere/global-mercator
+    //https://www.maptiler.com/google-maps-coordinates-tile-bounds-projection/
+    var zoom_level = 2;
     if(event.queryStringParameters.y < 0)
     {
       const response = {
@@ -33,7 +33,8 @@ exports.handler = async (event) => {
     }
     y = event.queryStringParameters.y;
     var num_chunks = Math.pow(2, zoom_level) * 8; //in Web_Mercator_projection there are 256 pixels for an image, in factorio there are 32 tiles per chunk, so multiply by 8. also zoom is a subdivision (e.g. zoom=0 is 2^0 image, zoom=4 is 2^4 images);
-    x = event.queryStringParameters.x % num_chunks;
+    x = event.queryStringParameters.x
+    x = wraparoundModulo(x, num_chunks);
     console.log('wrapped parameters: surface:', event.queryStringParameters.surfaceName, " x:", x, " y:", y);
     
     var cachedAnswer = await GetAnswerFromCache(event.queryStringParameters.surfaceName, x, y);
@@ -85,6 +86,11 @@ exports.handler = async (event) => {
     }
 };
 
+function wraparoundModulo(a,b){
+    //https://web.archive.org/web/20090717035140if_/javascript.about.com/od/problemsolving/a/modulobug.htm
+    return ((a%b)+b)%b;
+}
+
 async function GetAnswerFromCache(surfaceName, x, y) {
 
     var result = {
@@ -127,18 +133,9 @@ async function CreateNewCluster(surfaceName, chunk_x, chunk_y, zoom_level) {
       body: ''
     };
 
-    //TODO: correct calculation of pixel to check
-
-    //TODO: currently using https://en.wikipedia.org/wiki/Equirectangular_projection projection
-    //because the natural earth is using this format so its a straight translation.
-    //possibly another system could be more appealing
+    //This is using
     //https://en.wikipedia.org/wiki/Web_Mercator_projection
-    //could be used which would make the map more recognizable for users coming from e.g. google maps
-    //https://www.maptiler.com/google-maps-coordinates-tile-bounds-projection/
-    //zoom level 17:  	1.194328566 meters per pixel(factorio tile tile)
-    //https://github.com/DenisCarriere/global-mercator
-    //https://www.maptiler.com/google-maps-coordinates-tile-bounds-projection/
-    
+        
     var factorio_cluster_size = 32;
     var worldImagePixels_x = 21600;
     var worldImagePixels_y = 10800;
@@ -150,16 +147,15 @@ async function CreateNewCluster(surfaceName, chunk_x, chunk_y, zoom_level) {
     
     var s3 = new AWS.S3({});
     
-    for (in_chunk_x = 0; in_chunk_x < factorio_cluster_size; ++in_chunk_x)
+    for (in_chunk_y = 0; in_chunk_y < factorio_cluster_size; ++in_chunk_y)
     {
-      for (in_chunk_y = 0; in_chunk_y < factorio_cluster_size; ++in_chunk_y)
+      for (in_chunk_x = 0; in_chunk_x < factorio_cluster_size; ++in_chunk_x)
       {
         var pixel_x = chunk_x * factorio_cluster_size + in_chunk_x;
         var pixel_y = chunk_y * factorio_cluster_size + in_chunk_y;
         var meters = globalMercator.pixelsToMeters([pixel_x, pixel_y, zoom_level]);
         var lnglat = globalMercator.metersToLngLat(meters);
         
-        //TODO fix
         var natural_earth_x = Math.floor(worldImagePixels_x * (lnglat[0] + 180.0) / 360.0);
         var natural_earth_y = Math.floor(worldImagePixels_y * (lnglat[1] + 90.0) / 180.0);
         var pixelX = natural_earth_x % worldImageSubdivision_x;
@@ -198,14 +194,14 @@ async function CreateNewCluster(surfaceName, chunk_x, chunk_y, zoom_level) {
     var encodedTiles = EncodeTiles(tiles);
     
     result.good = true;
-    result.body = encodedTiles; //TODO proper list of tiles and entities in this cluster
+    result.body = encodedTiles; //TODO proper list of entities in this cluster
     return result;
 }
 
 function GetNearestTileName(r, g, b) {
     //FactorioWorld uses these nearest color values for conversion:
     //https://github.com/TheOddler/FactorioWorld/blob/master/MapGenerator/convert.py
-    //consider including alien biomes too
+    //TODO consider including alien biomes too
     var tiles = {
       "deepwater": {r: 89, g: 140, b: 182},
       //"deepwater-green": {r: 24, g: 39, b: 14},
@@ -267,6 +263,7 @@ function EncodeTiles(tiles)
     }
     delete tileOffsetEncodings[mostFrequentTile]; //not needed since most frequent will just be stored as default
     
+    /*
     var resultString = "def:"+mostFrequentTile+";";
     for (const [key, value] of Object.entries(tileOffsetEncodings))
     {
@@ -275,4 +272,9 @@ function EncodeTiles(tiles)
       resultString += ";";
     }
     return resultString;
+    */
+    var result = new Object();
+    result.defaultTile = mostFrequentTile;
+    result.otherTiles = tileOffsetEncodings;
+    return JSON.stringify(result);
 }

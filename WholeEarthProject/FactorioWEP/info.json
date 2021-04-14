@@ -1,0 +1,9 @@
+{
+  "name": "FactorioWEP",
+  "version": "0.1.1",
+  "title": "Whole earth project",
+  "author": "CaveGrinder",
+  "description": "A test to provide asynchronous global multiplayer",
+  "factorio_version": "1.1",
+  "dependencies": ["base >= 1.1.30"]
+}
