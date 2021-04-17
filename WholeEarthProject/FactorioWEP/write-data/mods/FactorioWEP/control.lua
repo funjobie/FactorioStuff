@@ -8,31 +8,24 @@ local function init_globals()
                 
 end
 
+local function player_chunk_dist(chunk)
+    local smallestPlayerDistance = 9999999999
+    for pk,pv in pairs(game.players) do
+        local playerDistance = math.sqrt(math.abs(pv.position.x - 32*chunk.x)^2 + math.abs(pv.position.y - 32*chunk.y)^2)
+        if playerDistance < smallestPlayerDistance then
+            smallestPlayerDistance = playerDistance
+        end
+    end
+    return smallestPlayerDistance
+end
+
 local function get_chunk_req_list()
 
-    --get closest needed chunk
-    local closestChunk
-    local closestChunkDistance = 9999999999
+    table.sort(global.needed_chunks, function(a,b) return player_chunk_dist(a)<player_chunk_dist(b) end
+    )
     for _,chunk in pairs(global.needed_chunks) do
-        local smallestPlayerDistance = 9999999999
-        for pk,pv in pairs(game.players) do
-            local playerDistance = math.abs(pv.position.x - 32*chunk.x) + math.abs(pv.position.y - 32*chunk.y)
-            if playerDistance < smallestPlayerDistance then
-                smallestPlayerDistance = playerDistance
-            end
-        end
-        if smallestPlayerDistance <= closestChunkDistance then
-            closestChunkDistance = smallestPlayerDistance
-            closestChunk = chunk
-        end
+        rcon.print("RCON_CHUNK_REQ:surface=" .. chunk.surface .. ";x=" .. chunk.x .. ";y=" .. chunk.y..";")
     end
-    --TODO: currently only publishing one chunk - batch requests to be analyzed later
-    if closestChunk then
-        rcon.print("RCON_CHUNK_REQ:surface=" .. closestChunk.surface .. ";x=" .. closestChunk.x .. ";y=" .. closestChunk.y..";")
-    end
-    --for _,chunk in pairs(global.needed_chunks) do
-    --    rcon.print("RCON_CHUNK_REQ:surface=" .. chunk.surface .. ";x=" .. chunk.x .. ";y=" .. chunk.y..";")
-    --end
     
 end
 
