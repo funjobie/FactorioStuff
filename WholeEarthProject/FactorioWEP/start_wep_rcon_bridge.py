@@ -5,7 +5,7 @@ import math
 import urllib.parse
 import concurrent.futures
 
-connection_ok = False
+commands_to_send_to_rcon = []
 
 def update_chunk(req):
     
@@ -46,12 +46,8 @@ def update_chunk(req):
           rcon_string += ","
       #TODO shouldn't surface also be coming from the server?
       rcon_string += "} surface=\""+surface+"\" chunk_x="+chunk_x+" chunk_y="+chunk_y
-      try:
-        rcon_response = rcon_client.send_command(rcon_string)
-      except:
-        print("couldn't send command to rcon")
-        global connection_ok
-        connection_ok = False
+      commands_to_send_to_rcon.append(rcon_string)
+      
     else:
       print("error: " + cloudResponse.status_code + " " + cloudResponse.text)
             
@@ -71,10 +67,9 @@ def establish_connection():
 
 def start_wep_rcon_bridge():
                 
-  # connection is established, use it now
+  connection_ok = False
   while True:
     time.sleep(1)
-    global connection_ok
     if not connection_ok:
       connection_ok = establish_connection()
     else:
@@ -90,6 +85,22 @@ def start_wep_rcon_bridge():
         with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
           executor.map(update_chunk, split)
 
+        #TODO realize a queue concept to ensure not being blocked by slowest answer
+
+        #convert the array into a dict to hand over to rcon
+        commands_to_send_to_rcon_dict = {}
+        command_counter = 0
+        global commands_to_send_to_rcon
+        for command in commands_to_send_to_rcon:
+          commands_to_send_to_rcon_dict["cmd"+str(command_counter)] = command
+          command_counter = command_counter + 1
+        commands_to_send_to_rcon = []
+        
+        try:
+          rcon_response = rcon_client.send_commands(commands_to_send_to_rcon_dict)
+        except Exception as err:
+          print("couldn't send command to rcon: " + str(err))
+          connection_ok = False
 
 if __name__ == "__main__":
   start_wep_rcon_bridge()

@@ -22,8 +22,11 @@ local function get_chunk_req_list()
 
     table.sort(global.needed_chunks, function(a,b) return player_chunk_dist(a)<player_chunk_dist(b) end
     )
+    count = 0
     for _,chunk in pairs(global.needed_chunks) do
         rcon.print("RCON_CHUNK_REQ:surface=" .. chunk.surface .. ";x=" .. chunk.x .. ";y=" .. chunk.y..";")
+        count = count + 1
+        if count > 32 then break end
     end
     
 end
@@ -77,6 +80,10 @@ script.on_event(defines.events.on_chunk_generated, function(e)
 
     if e.surface.name ~= "nauvis" then return end
     e.surface.build_checkerboard(e.area)
+    e.surface.destroy_decoratives{area=e.area}
+    for _, e in pairs(e.surface.find_entities(e.area)) do
+        e.destroy()
+    end
     if e.position.y < 0 then return end
     if e.position.y > 32 then return end --temporary to avoid unnecessary load. but here a limit is still needed!
     if e.position.x < 0 then return end --temporary to avoid unnecessary load
