@@ -4,14 +4,13 @@ local function init_globals()
     
     global.version = "0.1.1"
     global.needed_chunks = {}
-    --game.surfaces["nauvis"].generate_with_lab_tiles = true
                 
 end
 
 local function player_chunk_dist(chunk)
     local smallestPlayerDistance = 9999999999
     for pk,pv in pairs(game.players) do
-        local playerDistance = math.sqrt(math.abs(pv.position.x - 32*chunk.x)^2 + math.abs(pv.position.y - 32*chunk.y)^2)
+        local playerDistance = math.sqrt((pv.position.x - 32*chunk.x)^2 + (pv.position.y - 32*chunk.y)^2)
         if playerDistance < smallestPlayerDistance then
             smallestPlayerDistance = playerDistance
         end
@@ -85,7 +84,6 @@ script.on_event(defines.events.on_chunk_generated, function(e)
     
     table.insert(global.needed_chunks, {surface=e.surface.name,x=e.position.x,y=e.position.y})
 
-    
 end)
 
 script.on_event(defines.events.on_tick, function(e)
