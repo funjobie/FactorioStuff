@@ -1,0 +1,10 @@
+WholeEarthProject/FactorioWEP/__pycache__/
+WholeEarthProject/FactorioWEP/wep_dedicated_server_config.ini
+WholeEarthProject/FactorioWEP/write-data/.lock
+WholeEarthProject/FactorioWEP/write-data/factorio-current.log
+WholeEarthProject/FactorioWEP/write-data/factorio-previous.log
+WholeEarthProject/FactorioWEP/write-data/player-data.json
+WholeEarthProject/FactorioWEP/write-data/server-adminlist.json
+WholeEarthProject/FactorioWEP/write-data/mods/mod-settings.dat
+WholeEarthProject/FactorioWEP/write-data/mods/HelicopterRevival_0.1.4.zip
+WholeEarthProject/FactorioWEP/write-data/temp/
