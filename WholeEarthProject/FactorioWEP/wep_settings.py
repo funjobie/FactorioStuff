@@ -19,3 +19,9 @@ def get_path_to_steam():
     return path
   else:
     raise FileNotFoundError("could not find steam executable. please set path in wep_settings.py")
+    
+#replace with any arbitrary location, used for when a player starts for the first time or respawns
+#these are wgs coordinates - you can get them e.g. from google maps by right clicking.
+#default position is in london
+def get_new_player_spawn_location_lat_long():
+  return [51.507351336677424, -0.12775860350364374]

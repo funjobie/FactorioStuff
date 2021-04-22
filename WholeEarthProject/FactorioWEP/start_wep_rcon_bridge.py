@@ -4,6 +4,7 @@ import time
 import math
 import urllib.parse
 import concurrent.futures
+import wep_settings
 
 commands_to_send_to_rcon = []
 
@@ -17,12 +18,12 @@ def update_chunk(req):
     surface = line[0].split("=")[1]
     chunk_x = line[1].split("=")[1]
     chunk_y = line[2].split("=")[1]
-    print("parsing ok: "+ surface + ":" + chunk_x + ":" + chunk_y)
+    #print("parsing ok: "+ surface + ":" + chunk_x + ":" + chunk_y)
     queryString = "https://8dfgga78zg.execute-api.us-east-2.amazonaws.com/test/cluster?surfaceName=" + urllib.parse.quote_plus(surface)+"&x="+urllib.parse.quote_plus(chunk_x)+"&y="+urllib.parse.quote_plus(chunk_y)
-    print("requesting tile from the cloud: " + queryString)
+    #print("requesting tile from the cloud: " + queryString)
     cloudResponse = requests.get(queryString)
     if(cloudResponse.status_code == 200):
-      print("success: " + cloudResponse.text)
+      #print("success: " + cloudResponse.text)
       rJson = cloudResponse.json()
             
       tiles = []
@@ -47,6 +48,7 @@ def update_chunk(req):
       #TODO shouldn't surface also be coming from the server?
       rcon_string += "} surface=\""+surface+"\" chunk_x="+chunk_x+" chunk_y="+chunk_y
       commands_to_send_to_rcon.append(rcon_string)
+      print("chunk to be send to rcon: "+ surface + ":" + chunk_x + ":" + chunk_y)
       
     else:
       print("error: " + cloudResponse.status_code + " " + cloudResponse.text)
@@ -60,9 +62,23 @@ def establish_connection():
     global rcon_client 
     rcon_client = factorio_rcon.RCONClient("127.0.0.1", 4799, "rconpw")
     print("established rcon connection")
+    
+    spawn_lat_long = wep_settings.get_new_player_spawn_location_lat_long()
+    print(spawn_lat_long)
+    queryString = "https://8dfgga78zg.execute-api.us-east-2.amazonaws.com/test/coordinatestotile?surfaceName=nauvis&lat="+urllib.parse.quote_plus(str(spawn_lat_long[0]))+"&lon="+urllib.parse.quote_plus(str(spawn_lat_long[1]))
+    print("requesting spawn position from the cloud: " + queryString)
+    cloudResponse = requests.get(queryString)
+    if(cloudResponse.status_code == 200):
+      print("success: " + cloudResponse.text)
+      rJson = cloudResponse.json()
+      rcon_string = "/set_spawn_position spawn_x=" + str(rJson["x"]) + " spawn_y=" + str(rJson["y"])
+      rcon_client.send_command(rcon_string)
+    else:
+      raise Exception
+      
     return True
-  except:
-    print("could not connect to factorio rcon")
+  except Exception as err:
+    print("could not connect to factorio rcon " + str(err))
     return False
 
 def start_wep_rcon_bridge():
